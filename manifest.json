@@ -1,0 +1,17 @@
+{
+  "name": "Minimalist Markdown Editor",
+  "short_name": "MD Editor",
+  "description": "A lightweight, privacy-focused, 100% local Markdown editor.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1e1e2e",
+  "theme_color": "#89b4fa",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

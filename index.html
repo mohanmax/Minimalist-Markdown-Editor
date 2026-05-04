@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- DOMPurify for XSS protection -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#89b4fa">
+</head>
+<body>
+    <header class="toolbar">
+        <div class="toolbar-group">
+            <span class="app-title"><i class="fa-brands fa-markdown"></i> MD Editor</span>
+            <span id="file-name" class="file-name">Untitled.md</span>
+        </div>
+        
+        <div class="toolbar-group formatting-tools">
+            <button id="btn-bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+            <button id="btn-italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+            <button id="btn-h1" title="Heading 1"><i class="fa-solid fa-heading"></i></button>
+            <button id="btn-h2" title="Heading 2"><i class="fa-solid fa-heading fa-sm"></i></button>
+            <button id="btn-h3" title="Heading 3"><i class="fa-solid fa-heading fa-xs"></i></button>
+            <button id="btn-list-ul" title="Unordered List"><i class="fa-solid fa-list-ul"></i></button>
+            <button id="btn-list-ol" title="Ordered List"><i class="fa-solid fa-list-ol"></i></button>
+            <button id="btn-code" title="Code"><i class="fa-solid fa-code"></i></button>
+            <button id="btn-quote" title="Quote"><i class="fa-solid fa-quote-right"></i></button>
+            <button id="btn-link" title="Link"><i class="fa-solid fa-link"></i></button>
+        </div>
+
+        <div class="toolbar-group file-tools">
+            <button id="btn-new" title="New File"><i class="fa-solid fa-file-circle-plus"></i> New</button>
+            <button id="btn-open" title="Open File"><i class="fa-solid fa-folder-open"></i> Open</button>
+            <button id="btn-save" title="Save File"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            <button id="btn-theme" title="Toggle Light Mode" aria-label="Toggle Theme"><i class="fa-solid fa-sun"></i></button>
+        </div>
+    </header>
+
+    <main class="editor-container">
+        <div class="pane editor-pane">
+            <textarea id="markdown-input" placeholder="Start typing your Markdown here..."></textarea>
+        </div>
+        <div class="pane preview-pane">
+            <div id="html-preview" class="markdown-body"></div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
