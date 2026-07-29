@@ -29,6 +29,9 @@
     --mark-bg: rgba(249, 226, 175, 0.35);
     --mark-color: #f9e2af;
     --private-note-bg: rgba(166, 173, 200, 0.15);
+
+    /* Pane resizer */
+    --resizer-width: 5px;
 }
 
 body.light-theme {
@@ -78,47 +81,96 @@ body {
     overflow: hidden;
 }
 
-/* Toolbar */
+/* ============================================================
+   TOOLBAR — Two-Row Layout
+   ============================================================ */
+
 .toolbar {
     background-color: var(--toolbar-bg);
     border-bottom: 1px solid var(--border-color);
-    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+/* Row 1: App Bar */
+.app-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-height: 60px;
-    flex-wrap: wrap;
+    padding: 6px 16px;
+    border-bottom: 1px solid var(--border-color);
+    min-height: 44px;
     gap: 8px;
+}
+
+/* Row 2: Format Bar */
+.format-bar {
+    display: flex;
+    align-items: center;
+    padding: 4px 16px;
+    gap: 4px;
+    min-height: 38px;
+    overflow-x: auto;
+    /* Hide scrollbar visually but keep scroll functionality */
+    scrollbar-width: none;
+}
+.format-bar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Button Groups within Format Bar */
+.btn-group {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    flex-shrink: 0;
+}
+
+/* Push view-mode toggles to far right */
+.format-bar-end {
+    margin-left: auto;
+    padding-left: 8px;
+    border-left: 1px solid var(--border-color);
+    flex-shrink: 0;
 }
 
 .toolbar-group {
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+}
+
+.app-identity {
+    gap: 10px;
 }
 
 .app-title {
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--accent-color);
-    margin-right: 8px;
     white-space: nowrap;
 }
 
 .file-name {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
     background: var(--border-color);
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
     white-space: nowrap;
+    transition: color 0.2s ease;
 }
 
 .file-name.dirty::after {
-    content: " *";
+    content: " ●";
     color: #f38ba8;
 }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 
 button {
     background: transparent;
@@ -127,13 +179,15 @@ button {
     cursor: pointer;
     padding: 5px 8px;
     border-radius: 6px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     user-select: none;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 button:hover {
@@ -142,22 +196,25 @@ button:hover {
 }
 
 .sub-num {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: bold;
     margin-left: -2px;
+    line-height: 1;
 }
 
 .toolbar-divider {
     width: 1px;
-    height: 20px;
+    height: 18px;
     background-color: var(--border-color);
-    margin: 0 4px;
+    margin: 0 3px;
+    flex-shrink: 0;
 }
 
+/* File tool buttons */
 .file-tools button {
     background-color: var(--border-color);
-    font-size: 0.85rem;
-    padding: 6px 12px;
+    font-size: 0.82rem;
+    padding: 5px 12px;
 }
 
 .file-tools button:hover {
@@ -165,15 +222,33 @@ button:hover {
     color: #11111b;
 }
 
-.formatting-tools {
-    border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-    padding: 0 10px;
-    overflow-x: auto;
-    max-width: 100%;
+/* View mode toggle buttons */
+.view-toggle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 4px 8px;
 }
 
-/* Editor Container */
+.view-toggle:hover {
+    color: var(--accent-hover);
+    background-color: var(--border-color);
+}
+
+.view-toggle.active {
+    background-color: var(--accent-color);
+    color: #11111b;
+    border-color: transparent;
+}
+
+.view-toggle.active:hover {
+    background-color: var(--accent-hover);
+    color: #11111b;
+}
+
+/* ============================================================
+   EDITOR CONTAINER + PANES
+   ============================================================ */
+
 .editor-container {
     display: flex;
     flex: 1;
@@ -185,10 +260,63 @@ button:hover {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-width: 0; /* prevent flex blowout */
 }
 
-.editor-pane {
-    border-right: 1px solid var(--border-color);
+/* Pane header label strip */
+.pane-header {
+    display: flex;
+    align-items: center;
+    padding: 5px 16px;
+    background-color: var(--toolbar-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    gap: 6px;
+}
+
+.pane-header i {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+/* Draggable Resizer */
+.pane-resizer {
+    width: var(--resizer-width);
+    background-color: var(--border-color);
+    cursor: col-resize;
+    flex-shrink: 0;
+    position: relative;
+    transition: background-color 0.15s ease;
+    z-index: 10;
+    user-select: none;
+}
+
+.pane-resizer::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3px;
+    height: 24px;
+    border-radius: 2px;
+    background-color: transparent;
+    transition: background-color 0.15s ease;
+}
+
+.pane-resizer:hover,
+.pane-resizer.dragging {
+    background-color: var(--accent-color);
+}
+
+.pane-resizer:hover::after,
+.pane-resizer.dragging::after {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 textarea#markdown-input {
@@ -212,7 +340,43 @@ textarea#markdown-input {
     padding: 20px 40px;
 }
 
-/* Markdown Styles in Preview */
+/* ============================================================
+   STATUS BAR
+   ============================================================ */
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 16px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background-color: var(--toolbar-bg);
+    border-top: 1px solid var(--border-color);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+    min-height: 24px;
+    user-select: none;
+}
+
+.status-sep {
+    opacity: 0.35;
+}
+
+.status-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.7;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   MARKDOWN PREVIEW STYLES
+   ============================================================ */
+
 .markdown-body {
     font-family: var(--font-sans);
     color: var(--text-color);
@@ -462,7 +626,10 @@ textarea#markdown-input {
     gap: 6px;
 }
 
-/* Modal Dialog */
+/* ============================================================
+   MODAL DIALOG
+   ============================================================ */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -475,7 +642,6 @@ textarea#markdown-input {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    opacity: 1;
     transition: opacity 0.2s ease;
 }
 
@@ -499,6 +665,19 @@ textarea#markdown-input {
 @keyframes modalSlideIn {
     from { transform: translateY(-20px) scale(0.95); opacity: 0; }
     to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Modal validation shake animation */
+@keyframes modalShake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-8px); }
+    40%       { transform: translateX(8px); }
+    60%       { transform: translateX(-5px); }
+    80%       { transform: translateX(5px); }
+}
+
+.modal-container.shake {
+    animation: modalShake 0.4s ease;
 }
 
 .modal-header {
@@ -636,9 +815,12 @@ textarea#markdown-input {
     background-color: var(--accent-hover);
 }
 
-/* Print CSS */
+/* ============================================================
+   PRINT CSS
+   ============================================================ */
+
 @media print {
-    .toolbar, .modal-overlay {
+    .toolbar, .status-bar, .modal-overlay {
         display: none !important;
     }
 
@@ -649,13 +831,17 @@ textarea#markdown-input {
         overflow: visible !important;
     }
 
-    .editor-pane {
+    .editor-pane, .pane-resizer {
         display: none !important;
     }
 
     .preview-pane {
         padding: 0 !important;
         width: 100% !important;
+    }
+
+    .pane-header {
+        display: none !important;
     }
 
     .markdown-body {
@@ -672,7 +858,10 @@ textarea#markdown-input {
     }
 }
 
-/* Custom Scrollbar */
+/* ============================================================
+   CUSTOM SCROLLBAR
+   ============================================================ */
+
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -688,10 +877,13 @@ textarea#markdown-input {
     background: #45475a;
 }
 
-/* Toast Notification System */
+/* ============================================================
+   TOAST NOTIFICATION SYSTEM
+   ============================================================ */
+
 .toast-container {
     position: fixed;
-    bottom: 24px;
+    bottom: 36px; /* above status bar */
     right: 24px;
     z-index: 2000;
     display: flex;
@@ -736,3 +928,195 @@ textarea#markdown-input {
     color: #89b4fa;
 }
 
+/* ============================================================
+   AUTO-SAVE STATUS INDICATOR
+   ============================================================ */
+
+.status-autosave {
+    font-size: 0.7rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: all 0.3s ease;
+}
+
+.status-autosave.saving {
+    background-color: rgba(137, 180, 250, 0.15);
+    color: var(--accent-color);
+}
+
+.status-autosave.saved {
+    background-color: rgba(166, 227, 161, 0.15);
+    color: #a6e3a1;
+}
+
+/* ============================================================
+   EXPORT DROPDOWN MENU
+   ============================================================ */
+
+.export-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.export-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 190px;
+    background-color: var(--toolbar-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    z-index: 500;
+    overflow: hidden;
+    animation: modalSlideIn 0.15s ease-out;
+}
+
+.export-menu.hidden {
+    display: none;
+}
+
+.export-menu button {
+    width: 100%;
+    text-align: left;
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    border-radius: 0;
+    border: none;
+    gap: 8px;
+    color: var(--text-color);
+    justify-content: flex-start;
+}
+
+.export-menu button:hover {
+    background-color: var(--border-color);
+    color: var(--accent-hover);
+}
+
+.export-menu button + button {
+    border-top: 1px solid var(--border-color);
+}
+
+/* ============================================================
+   SEARCH & REPLACE PANEL
+   ============================================================ */
+
+.search-panel {
+    position: fixed;
+    top: 88px; /* sits just below the two-row toolbar */
+    right: 20px;
+    z-index: 900;
+    background-color: var(--toolbar-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 380px;
+    animation: modalSlideIn 0.18s ease-out;
+}
+
+.search-panel.hidden {
+    display: none;
+}
+
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.search-input-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0 8px;
+    gap: 6px;
+    transition: border-color 0.2s ease;
+}
+
+.search-input-wrap:focus-within {
+    border-color: var(--accent-color);
+}
+
+.search-icon {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.search-input-wrap input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 6px 0;
+}
+
+.search-count {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-family: var(--font-mono);
+}
+
+.search-panel button {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.search-panel button:hover {
+    background-color: var(--border-color);
+    color: var(--accent-hover);
+}
+
+.search-close-btn {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.search-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    user-select: none;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.search-option:hover {
+    background-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.search-option input[type="checkbox"] {
+    accent-color: var(--accent-color);
+    cursor: pointer;
+    width: 13px;
+    height: 13px;
+}
+
+/* Highlighted search match in editor — injected via CSS custom highlight API fallback */
+.search-highlight-current {
+    background-color: rgba(249, 226, 175, 0.55);
+    outline: 2px solid #f9e2af;
+    border-radius: 2px;
+}
