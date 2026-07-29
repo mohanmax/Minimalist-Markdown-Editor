@@ -9,6 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- DOMPurify for XSS protection -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <!-- KaTeX for LaTeX Math expressions -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -27,14 +30,39 @@
         <div class="toolbar-group formatting-tools">
             <button id="btn-bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
             <button id="btn-italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
-            <button id="btn-h1" title="Heading 1"><i class="fa-solid fa-heading"></i></button>
-            <button id="btn-h2" title="Heading 2"><i class="fa-solid fa-heading fa-sm"></i></button>
-            <button id="btn-h3" title="Heading 3"><i class="fa-solid fa-heading fa-xs"></i></button>
+            <button id="btn-strikethrough" title="Strikethrough (~~)"><i class="fa-solid fa-strikethrough"></i></button>
+            <button id="btn-highlight" title="Highlight (==)"><i class="fa-solid fa-highlighter"></i></button>
+            <button id="btn-subscript" title="Subscript (~)"><i class="fa-solid fa-subscript"></i></button>
+            <button id="btn-superscript" title="Superscript (^)"><i class="fa-solid fa-superscript"></i></button>
+
+            <span class="toolbar-divider"></span>
+
+            <button id="btn-h1" title="Heading 1"><i class="fa-solid fa-heading"></i><span class="sub-num">1</span></button>
+            <button id="btn-h2" title="Heading 2"><i class="fa-solid fa-heading"></i><span class="sub-num">2</span></button>
+            <button id="btn-h3" title="Heading 3"><i class="fa-solid fa-heading"></i><span class="sub-num">3</span></button>
+            <button id="btn-h4" title="Heading 4"><i class="fa-solid fa-heading"></i><span class="sub-num">4</span></button>
+
+            <span class="toolbar-divider"></span>
+
             <button id="btn-list-ul" title="Unordered List"><i class="fa-solid fa-list-ul"></i></button>
             <button id="btn-list-ol" title="Ordered List"><i class="fa-solid fa-list-ol"></i></button>
-            <button id="btn-code" title="Code"><i class="fa-solid fa-code"></i></button>
+            <button id="btn-tasklist" title="Task List (- [ ])"><i class="fa-solid fa-square-check"></i></button>
             <button id="btn-quote" title="Quote"><i class="fa-solid fa-quote-right"></i></button>
-            <button id="btn-link" title="Link"><i class="fa-solid fa-link"></i></button>
+            <button id="btn-code" title="Code Block"><i class="fa-solid fa-code"></i></button>
+            <button id="btn-hr" title="Horizontal Rule (---)"><i class="fa-solid fa-minus"></i></button>
+            <button id="btn-pagebreak" title="Page Break (===)"><i class="fa-solid fa-scissors"></i></button>
+
+            <span class="toolbar-divider"></span>
+
+            <button id="btn-link" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+            <button id="btn-image" title="Insert Image"><i class="fa-solid fa-image"></i></button>
+            <button id="btn-video" title="Insert Video"><i class="fa-solid fa-video"></i></button>
+            <button id="btn-audio" title="Insert Audio"><i class="fa-solid fa-headphones"></i></button>
+            <button id="btn-table" title="Insert Table"><i class="fa-solid fa-table"></i></button>
+            <button id="btn-math" title="Insert Math / LaTeX"><i class="fa-solid fa-calculator"></i></button>
+            <button id="btn-callout" title="Insert Callout Box"><i class="fa-solid fa-circle-info"></i></button>
+            <button id="btn-footnote" title="Insert Footnote"><i class="fa-solid fa-asterisk"></i></button>
+            <button id="btn-privatenote" title="Insert Private Note"><i class="fa-solid fa-eye-slash"></i></button>
         </div>
 
         <div class="toolbar-group file-tools">
@@ -53,6 +81,23 @@
             <div id="html-preview" class="markdown-body"></div>
         </div>
     </main>
+
+    <!-- Reusable Modal Dialog -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modal-title">Insert Item</h3>
+                <button id="modal-close-btn" class="modal-close" type="button" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="modal-form">
+                <div id="modal-fields" class="modal-fields"></div>
+                <div class="modal-actions">
+                    <button type="button" id="modal-cancel-btn" class="btn-cancel">Cancel</button>
+                    <button type="submit" id="modal-submit-btn" class="btn-submit">Insert</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
