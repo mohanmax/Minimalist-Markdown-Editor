@@ -26,6 +26,6 @@ python -m http.server 8000
 - [DOMPurify](https://github.com/cure53/DOMPurify) for XSS protection
 - Font Awesome for icons
 
-## License
+## License Type
 
 MIT License

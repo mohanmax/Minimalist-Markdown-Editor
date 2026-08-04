@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Editor</title>
+
+    <!-- SEO -->
+    <title>MD Editor — Minimalist Markdown Editor</title>
+    <meta name="description" content="A lightning-fast, 100% client-side Markdown editor with live preview. Privacy-first, zero data collection, works completely offline.">
+
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src * data: blob:; connect-src 'none';">
+
     <link rel="stylesheet" href="styles.css">
+
     <!-- Marked.js for markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- DOMPurify for XSS protection -->
@@ -22,65 +31,168 @@
 </head>
 <body>
     <header class="toolbar">
-        <div class="toolbar-group">
-            <span class="app-title"><i class="fa-brands fa-markdown"></i> MD Editor</span>
-            <span id="file-name" class="file-name">Untitled.md</span>
-        </div>
-        
-        <div class="toolbar-group formatting-tools">
-            <button id="btn-bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
-            <button id="btn-italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
-            <button id="btn-strikethrough" title="Strikethrough (~~)"><i class="fa-solid fa-strikethrough"></i></button>
-            <button id="btn-highlight" title="Highlight (==)"><i class="fa-solid fa-highlighter"></i></button>
-            <button id="btn-subscript" title="Subscript (~)"><i class="fa-solid fa-subscript"></i></button>
-            <button id="btn-superscript" title="Superscript (^)"><i class="fa-solid fa-superscript"></i></button>
 
-            <span class="toolbar-divider"></span>
-
-            <button id="btn-h1" title="Heading 1"><i class="fa-solid fa-heading"></i><span class="sub-num">1</span></button>
-            <button id="btn-h2" title="Heading 2"><i class="fa-solid fa-heading"></i><span class="sub-num">2</span></button>
-            <button id="btn-h3" title="Heading 3"><i class="fa-solid fa-heading"></i><span class="sub-num">3</span></button>
-            <button id="btn-h4" title="Heading 4"><i class="fa-solid fa-heading"></i><span class="sub-num">4</span></button>
-
-            <span class="toolbar-divider"></span>
-
-            <button id="btn-list-ul" title="Unordered List"><i class="fa-solid fa-list-ul"></i></button>
-            <button id="btn-list-ol" title="Ordered List"><i class="fa-solid fa-list-ol"></i></button>
-            <button id="btn-tasklist" title="Task List (- [ ])"><i class="fa-solid fa-square-check"></i></button>
-            <button id="btn-quote" title="Quote"><i class="fa-solid fa-quote-right"></i></button>
-            <button id="btn-code" title="Code Block"><i class="fa-solid fa-code"></i></button>
-            <button id="btn-hr" title="Horizontal Rule (---)"><i class="fa-solid fa-minus"></i></button>
-            <button id="btn-pagebreak" title="Page Break (===)"><i class="fa-solid fa-scissors"></i></button>
-
-            <span class="toolbar-divider"></span>
-
-            <button id="btn-link" title="Insert Link"><i class="fa-solid fa-link"></i></button>
-            <button id="btn-image" title="Insert Image"><i class="fa-solid fa-image"></i></button>
-            <button id="btn-video" title="Insert Video"><i class="fa-solid fa-video"></i></button>
-            <button id="btn-audio" title="Insert Audio"><i class="fa-solid fa-headphones"></i></button>
-            <button id="btn-table" title="Insert Table"><i class="fa-solid fa-table"></i></button>
-            <button id="btn-math" title="Insert Math / LaTeX"><i class="fa-solid fa-calculator"></i></button>
-            <button id="btn-callout" title="Insert Callout Box"><i class="fa-solid fa-circle-info"></i></button>
-            <button id="btn-footnote" title="Insert Footnote"><i class="fa-solid fa-asterisk"></i></button>
-            <button id="btn-privatenote" title="Insert Private Note"><i class="fa-solid fa-eye-slash"></i></button>
+        <!-- Row 1: App Bar -->
+        <div class="app-bar">
+            <div class="toolbar-group app-identity">
+                <span class="app-title"><i class="fa-brands fa-markdown"></i> MD Editor</span>
+                <span id="file-name" class="file-name">Untitled.md</span>
+            </div>
+            <div class="toolbar-group file-tools">
+                <button id="btn-new"   title="New File (Ctrl+N)"><i class="fa-solid fa-file-circle-plus"></i> New</button>
+                <button id="btn-open"  title="Open File (Ctrl+O)"><i class="fa-solid fa-folder-open"></i> Open</button>
+                <button id="btn-save"  title="Save File (Ctrl+S)"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                <span class="toolbar-divider"></span>
+                <button id="btn-copy-md"   title="Copy Markdown Source"><i class="fa-solid fa-copy"></i></button>
+                <button id="btn-copy-html" title="Copy Compiled HTML"><i class="fa-solid fa-file-code"></i></button>
+                <span class="toolbar-divider"></span>
+                <!-- Export dropdown -->
+                <div class="export-wrapper">
+                    <button id="btn-export" title="Export Document" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    </button>
+                    <div id="export-menu" class="export-menu hidden" role="menu">
+                        <button id="btn-export-html" role="menuitem"><i class="fa-solid fa-code"></i> Export as HTML</button>
+                        <button id="btn-export-txt"  role="menuitem"><i class="fa-solid fa-file-lines"></i> Export as Plain Text</button>
+                    </div>
+                </div>
+                <button id="btn-search" title="Search &amp; Replace (Ctrl+F)" aria-label="Search and Replace">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <span class="toolbar-divider"></span>
+                <button id="btn-theme" title="Toggle Theme" aria-label="Toggle Theme"><i class="fa-solid fa-sun"></i></button>
+            </div>
         </div>
 
-        <div class="toolbar-group file-tools">
-            <button id="btn-new" title="New File"><i class="fa-solid fa-file-circle-plus"></i> New</button>
-            <button id="btn-open" title="Open File"><i class="fa-solid fa-folder-open"></i> Open</button>
-            <button id="btn-save" title="Save File"><i class="fa-solid fa-floppy-disk"></i> Save</button>
-            <button id="btn-theme" title="Toggle Light Mode" aria-label="Toggle Theme"><i class="fa-solid fa-sun"></i></button>
+        <!-- Row 2: Formatting Bar -->
+        <div class="format-bar">
+
+            <!-- Group: History (Undo / Redo) -->
+            <div class="btn-group" aria-label="History">
+                <button id="btn-undo" title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+                <button id="btn-redo" title="Redo (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
+            </div>
+
+            <span class="toolbar-divider"></span>
+
+            <!-- Group: Text Formatting -->
+            <div class="btn-group" aria-label="Text formatting">
+                <button id="btn-bold"          title="Bold (Ctrl+B)"><i class="fa-solid fa-bold"></i></button>
+                <button id="btn-italic"        title="Italic (Ctrl+I)"><i class="fa-solid fa-italic"></i></button>
+                <button id="btn-strikethrough" title="Strikethrough (~~)"><i class="fa-solid fa-strikethrough"></i></button>
+                <button id="btn-highlight"     title="Highlight (==)"><i class="fa-solid fa-highlighter"></i></button>
+                <button id="btn-subscript"     title="Subscript (~)"><i class="fa-solid fa-subscript"></i></button>
+                <button id="btn-superscript"   title="Superscript (^)"><i class="fa-solid fa-superscript"></i></button>
+            </div>
+
+            <span class="toolbar-divider"></span>
+
+            <!-- Group: Headings -->
+            <div class="btn-group" aria-label="Headings">
+                <button id="btn-h1" title="Heading 1"><i class="fa-solid fa-heading"></i><span class="sub-num">1</span></button>
+                <button id="btn-h2" title="Heading 2"><i class="fa-solid fa-heading"></i><span class="sub-num">2</span></button>
+                <button id="btn-h3" title="Heading 3"><i class="fa-solid fa-heading"></i><span class="sub-num">3</span></button>
+                <button id="btn-h4" title="Heading 4"><i class="fa-solid fa-heading"></i><span class="sub-num">4</span></button>
+                <button id="btn-h5" title="Heading 5"><i class="fa-solid fa-heading"></i><span class="sub-num">5</span></button>
+                <button id="btn-h6" title="Heading 6"><i class="fa-solid fa-heading"></i><span class="sub-num">6</span></button>
+            </div>
+
+            <span class="toolbar-divider"></span>
+
+            <!-- Group: Blocks & Lists -->
+            <div class="btn-group" aria-label="Lists and blocks">
+                <button id="btn-list-ul"   title="Unordered List"><i class="fa-solid fa-list-ul"></i></button>
+                <button id="btn-list-ol"   title="Ordered List"><i class="fa-solid fa-list-ol"></i></button>
+                <button id="btn-tasklist"  title="Task List (- [ ])"><i class="fa-solid fa-square-check"></i></button>
+                <button id="btn-quote"     title="Blockquote"><i class="fa-solid fa-quote-right"></i></button>
+                <button id="btn-code"      title="Code Block"><i class="fa-solid fa-code"></i></button>
+                <button id="btn-hr"        title="Horizontal Rule (---)"><i class="fa-solid fa-minus"></i></button>
+                <button id="btn-pagebreak" title="Page Break (===)"><i class="fa-solid fa-scissors"></i></button>
+            </div>
+
+            <span class="toolbar-divider"></span>
+
+            <!-- Group: Insert / Media -->
+            <div class="btn-group" aria-label="Insert">
+                <button id="btn-link"        title="Insert Link"><i class="fa-solid fa-link"></i></button>
+                <button id="btn-image"       title="Insert Image"><i class="fa-solid fa-image"></i></button>
+                <button id="btn-video"       title="Insert Video"><i class="fa-solid fa-video"></i></button>
+                <button id="btn-audio"       title="Insert Audio"><i class="fa-solid fa-headphones"></i></button>
+                <button id="btn-table"       title="Insert Table"><i class="fa-solid fa-table"></i></button>
+                <button id="btn-math"        title="Insert Math / LaTeX"><i class="fa-solid fa-calculator"></i></button>
+                <button id="btn-callout"     title="Insert Callout Box"><i class="fa-solid fa-circle-info"></i></button>
+                <button id="btn-footnote"    title="Insert Footnote"><i class="fa-solid fa-asterisk"></i></button>
+                <button id="btn-privatenote" title="Insert Private Note"><i class="fa-solid fa-eye-slash"></i></button>
+            </div>
+
+            <!-- View Mode Toggles (pushed to far right) -->
+            <div class="btn-group format-bar-end" aria-label="View mode">
+                <button id="btn-focus-editor"  title="Editor Only (Alt+1)" class="view-toggle" aria-pressed="false"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button id="btn-focus-split"   title="Split View (Alt+2)"  class="view-toggle active" aria-pressed="true"><i class="fa-solid fa-table-columns"></i></button>
+                <button id="btn-focus-preview" title="Preview Only (Alt+3)" class="view-toggle" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
+            </div>
+
         </div>
     </header>
 
     <main class="editor-container">
-        <div class="pane editor-pane">
-            <textarea id="markdown-input" placeholder="Start typing your Markdown here..."></textarea>
+        <div class="pane editor-pane" id="pane-editor">
+            <div class="pane-header">
+                <span><i class="fa-solid fa-pen"></i> Editor</span>
+            </div>
+            <textarea id="markdown-input" placeholder="Start typing your Markdown here..." spellcheck="true"></textarea>
         </div>
-        <div class="pane preview-pane">
+        <div class="pane-resizer" id="pane-resizer" title="Drag to resize panes" aria-hidden="true"></div>
+        <div class="pane preview-pane" id="pane-preview">
+            <div class="pane-header">
+                <span><i class="fa-solid fa-eye"></i> Preview</span>
+            </div>
             <div id="html-preview" class="markdown-body"></div>
         </div>
     </main>
+
+    <!-- Status Bar -->
+    <footer class="status-bar" aria-label="Document statistics">
+        <span id="status-words">Words: 0</span>
+        <span class="status-sep">·</span>
+        <span id="status-chars">Chars: 0</span>
+        <span class="status-sep">·</span>
+        <span id="status-lines">Lines: 1</span>
+        <span class="status-sep">·</span>
+        <span id="status-cursor">Ln 1, Col 1</span>
+        <span class="status-right">
+            <span id="status-autosave" class="status-autosave"></span>
+            Markdown
+        </span>
+    </footer>
+
+    <!-- Search & Replace Panel -->
+    <div id="search-panel" class="search-panel hidden" role="search" aria-label="Search and Replace">
+        <div class="search-row">
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input id="search-input" type="text" placeholder="Find…" autocomplete="off" spellcheck="false" aria-label="Find">
+                <span id="search-count" class="search-count"></span>
+            </div>
+            <button id="search-prev" title="Previous match (Shift+Enter)" aria-label="Previous match"><i class="fa-solid fa-chevron-up"></i></button>
+            <button id="search-next" title="Next match (Enter)" aria-label="Next match"><i class="fa-solid fa-chevron-down"></i></button>
+            <button id="search-close" title="Close (Escape)" aria-label="Close search" class="search-close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="search-row">
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-pen search-icon"></i>
+                <input id="replace-input" type="text" placeholder="Replace…" autocomplete="off" spellcheck="false" aria-label="Replace">
+            </div>
+            <button id="replace-one" title="Replace current match">Replace</button>
+            <button id="replace-all" title="Replace all matches">All</button>
+            <label class="search-option" title="Match case">
+                <input type="checkbox" id="search-case"> Aa
+            </label>
+            <label class="search-option" title="Use regular expression">
+                <input type="checkbox" id="search-regex"> .*
+            </label>
+        </div>
+    </div>
 
     <!-- Reusable Modal Dialog -->
     <div id="modal-overlay" class="modal-overlay hidden">
